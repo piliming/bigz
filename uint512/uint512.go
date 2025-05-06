@@ -1,30 +1,35 @@
 package uint512
 
 import (
-	"errors"
 	"github.com/piliming/bigz/uint128"
 	"github.com/piliming/bigz/uint256"
+
+	"errors"
 	"math/big"
 	"math/bits"
 	"slices"
 	"unsafe"
 )
 
+const bitCount = 512
+const byteCount = bitCount / 8
+const uint64Count = byteCount / 8
+
 // Note, Zero and Max are functions just to make read-only values.
 // We cannot define constants for structures, and global variables
 // are unacceptable because it will be possible to change them.
 
-// Zero is the lowest possible Uint256 value.
+// Zero is the lowest possible Uint512 value.
 func Zero() Uint512 {
 	return From64(0)
 }
 
-// One is the lowest non-zero Uint256 value.
+// One is the lowest non-zero Uint512 value.
 func One() Uint512 {
 	return From64(1)
 }
 
-// Max is the largest possible Uint256 value.
+// Max is the largest possible Uint512 value.
 func Max() Uint512 {
 	return Uint512{
 		Lo: uint256.Max(),
@@ -64,26 +69,33 @@ func FromBig(i *big.Int) Uint512 {
 
 // FromBigEx converts *big.Int to 256-bit Uint256 value (eXtended version).
 // Provides ok successful flag as a second return value.
-// If input integer is negative or overflows 256-bit then ok=false.
-// If input is nil then zero 256-bit returned.
+// If input integer is negative or overflows 512-bit then ok=false.
+// If input is nil then zero 512-bit returned.
 func FromBigEx(i *big.Int) (Uint512, bool) {
 	switch {
 	case i == nil:
 		return Zero(), true // assuming nil === 0
 	case i.Sign() < 0:
 		return Zero(), false // value cannot be negative!
-	case i.BitLen() > 256:
-		return Max(), false // value overflows 256-bit!
+	case i.BitLen() > bitCount:
+		return Max(), false // value overflows 512-bit!
 	}
 
-	return Uint512{}, false
+	buf := i.Bytes()
+	slices.Reverse(buf)
+
+	arr := [byteCount]byte{}
+
+	copy(arr[:], buf)
+
+	return LoadLittleEndian(arr), true
 }
 
 func (u Uint512) Big() *big.Int {
 
-	buf := [8 * 8]byte{}
+	buf := [byteCount]byte{}
 
-	copy(buf[:], (*(*[8 * 8]byte)(unsafe.Pointer(&u)))[:])
+	copy(buf[:], (*(*[byteCount]byte)(unsafe.Pointer(&u)))[:])
 
 	slices.Reverse(buf[:])
 
@@ -109,7 +121,7 @@ func (u Uint512) Cmp(v Uint512) int {
 	return u.Lo.Cmp(v.Lo)
 }
 
-func (u Uint512) Cmp128(v Uint256) int {
+func (u Uint512) Cmp256(v Uint256) int {
 	if !u.Hi.IsZero() {
 		return +1 // u > v
 	}
@@ -168,7 +180,6 @@ func (u Uint512) Or256(v Uint256) Uint512 {
 	}
 }
 
-// Xor returns logical XOR (u^v) of two 256-bit values.
 func (u Uint512) Xor(v Uint512) Uint512 {
 	return Uint512{
 		Lo: u.Lo.Xor(v.Lo),
@@ -176,7 +187,7 @@ func (u Uint512) Xor(v Uint512) Uint512 {
 	}
 }
 
-func (u Uint512) Xor128(v Uint256) Uint512 {
+func (u Uint512) Xor256(v Uint256) Uint512 {
 	return Uint512{
 		Lo: u.Lo.Xor(v),
 		Hi: u.Hi,
@@ -263,10 +274,10 @@ func (u Uint512) Div128(v Uint128) Uint512 {
 	return q
 }
 
-//func (u Uint512) Div64(v uint64) Uint512 {
-//	q, _ := u.QuoRem64(v)
-//	return q
-//}
+func (u Uint512) Div64(v uint64) Uint512 {
+	q, _ := u.QuoRem64(v)
+	return q
+}
 
 func (u Uint512) Mod(v Uint512) Uint512 {
 	_, r := u.QuoRem(v)
@@ -283,10 +294,10 @@ func (u Uint512) Mod128(v Uint128) Uint128 {
 	return r
 }
 
-//func (u Uint512) Mod64(v uint64) uint64 {
-//	_, r := u.QuoRem64(v)
-//	return r
-//}
+func (u Uint512) Mod64(v uint64) uint64 {
+	_, r := u.QuoRem64(v)
+	return r
+}
 
 func (u Uint512) QuoRem(v Uint512) (Uint512, Uint512) {
 	if v.Hi.IsZero() {
@@ -388,7 +399,7 @@ func (u Uint512) Lsh(n uint) Uint512 {
 	if n == 0 {
 		return u
 	}
-	if n >= 512 {
+	if n >= bitCount {
 		return Zero()
 	}
 
@@ -400,7 +411,6 @@ func (u Uint512) Lsh(n uint) Uint512 {
 	}
 
 	if n > 128 {
-		//n -= 128
 		return Uint512{
 			Lo: Uint256{
 				Lo: Uint128{},
@@ -466,7 +476,7 @@ func (u Uint512) Rsh(n uint) Uint512 {
 	if n == 0 {
 		return u
 	}
-	if n >= 512 {
+	if n >= bitCount {
 		return Zero()
 	}
 
@@ -580,10 +590,10 @@ func (u Uint512) ReverseBytes() Uint512 {
 }
 
 func (u Uint512) Bit(n int) bool {
-	if n < 0 || n >= 512 {
+	if n < 0 || n >= bitCount {
 		return false
 	}
 	word := n / 64
 	bit := uint(n % 64)
-	return ((*(*[8]uint64)(unsafe.Pointer(&u)))[word]>>bit)&1 == 1
+	return ((*(*[uint64Count]uint64)(unsafe.Pointer(&u)))[word]>>bit)&1 == 1
 }

@@ -1,6 +1,6 @@
 // + build ignore
 
-package uint512
+package uint1024
 
 import (
 	"fmt"
@@ -11,18 +11,18 @@ import (
 	"testing"
 )
 
-func rand512slice(count int) []Uint512 {
-	out := make([]Uint512, count)
+func rand1024slice(count int) []Uint1024 {
+	out := make([]Uint1024, count)
 	for i := range out {
-		out[i] = rand512()
+		out[i] = rand1024()
 	}
 	return out
 }
 
-func rand512() Uint512 {
-	buf := [64]byte{}
+func rand1024() Uint1024 {
+	buf := [128]byte{}
 
-	for i := 0; i < 64; i++ {
+	for i := 0; i < 128; i++ {
 		buf[i] = byte(rand.Uint64() % 256)
 	}
 
@@ -49,66 +49,66 @@ func assertInt(t *testing.T, got, want int, prefix string) {
 
 const loopTimes = 1000000
 
-var maxBigIntUint512 = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 512), big.NewInt(1))
+var maxBigIntUint1024 = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 1024), big.NewInt(1))
 
-func TestUint512_Add(t *testing.T) {
+func TestUint1024_Add(t *testing.T) {
 	for i := 0; i < loopTimes; i++ {
 
-		val := rand512()
+		val := rand1024()
 		bigVal := val.Big()
 
 		assertString(t, val.String(), bigVal.String(), "big")
 
-		addVal := rand512()
+		addVal := rand1024()
 		addBigVal := addVal.Big()
 		assertString(t, addVal.String(), addBigVal.String(), "big1")
 
 		val = val.Add(addVal)
 		bigVal = bigVal.Add(bigVal, addBigVal)
-		bigVal = bigVal.And(bigVal, maxBigIntUint512)
+		bigVal = bigVal.And(bigVal, maxBigIntUint1024)
 		assertString(t, val.String(), bigVal.String(), "add")
 	}
 }
 
-func TestUint512_Sub(t *testing.T) {
+func TestUint1024_Sub(t *testing.T) {
 	for i := 0; i < loopTimes; i++ {
-		val := rand512()
+		val := rand1024()
 		bigVal := val.Big()
 
 		bigVal.Bytes()
 
-		subVal := rand512()
+		subVal := rand1024()
 		subBigVal := subVal.Big()
 		assertString(t, subVal.String(), subBigVal.String(), "big2")
 
 		val = val.Sub(subVal)
 		bigVal = bigVal.Sub(bigVal, subBigVal)
-		bigVal = bigVal.And(bigVal, maxBigIntUint512)
+		bigVal = bigVal.And(bigVal, maxBigIntUint1024)
 		assertString(t, val.String(), bigVal.String(), "sub")
 	}
 }
 
-func TestUint512_Mul(t *testing.T) {
+func TestUint1024_Mul(t *testing.T) {
 	for i := 0; i < loopTimes; i++ {
-		val := rand512()
+		val := rand1024()
 		bigVal := val.Big()
 
-		mulVal := rand512()
+		mulVal := rand1024()
 		mulBigVal := mulVal.Big()
 
 		val = val.Mul(mulVal)
 
 		bigVal = bigVal.Mul(bigVal, mulBigVal)
-		bigVal = bigVal.And(bigVal, maxBigIntUint512)
+		bigVal = bigVal.And(bigVal, maxBigIntUint1024)
 
 		assertString(t, val.String(), bigVal.String(), "mul")
 	}
 }
 
-func TestUint512_QRem64(t *testing.T) {
+func TestUint1024_QRem64(t *testing.T) {
 	for i := 0; i < loopTimes; i++ {
 
-		val := rand512()
+		val := rand1024()
 		bigVal := val.Big()
 
 		//assertString(t, val.String(), bigVal.String(), "big")
@@ -119,7 +119,7 @@ func TestUint512_QRem64(t *testing.T) {
 
 		qVal, rVal := val.QuoRem64(divVal)
 		qBigVal, rBigVal := bigVal.QuoRem(bigVal, divBigVal, big.NewInt(0))
-		//bigVal = bigVal.And(bigVal, maxBigIntUint512)
+		//bigVal = bigVal.And(bigVal, maxBigIntUint1024)
 
 		assertString(t, fmt.Sprintf("%d", rVal), rBigVal.String(), "r")
 
@@ -127,18 +127,19 @@ func TestUint512_QRem64(t *testing.T) {
 	}
 }
 
-func TestUint512_Div(t *testing.T) {
+func TestUint1024_Div(t *testing.T) {
 	for i := 0; i < loopTimes; i++ {
-		val := rand512()
+		val := rand1024()
+
 		oriVal := val.String()
 		bigVal := val.Big()
 		oriBigVal := bigVal.String()
 
-		divVal := rand512()
+		divVal := rand1024()
 		divBigVal := divVal.Big()
 		val = val.Div(divVal)
 		bigVal = bigVal.Div(bigVal, divBigVal)
-		bigVal = bigVal.And(bigVal, maxBigIntUint512)
+		bigVal = bigVal.And(bigVal, maxBigIntUint1024)
 
 		got, want := val.String(), bigVal.String()
 
@@ -158,52 +159,52 @@ func TestUint512_Div(t *testing.T) {
 	}
 }
 
-func TestUint512_Lsh(t *testing.T) {
+func TestUint1024_Lsh(t *testing.T) {
 	for i := 0; i < loopTimes; i++ {
-		val := rand512()
+		val := rand1024()
 		bigVal := val.Big()
 
-		shift := rand.Uint64() % 520
+		shift := rand.Uint64() % 1030
 
 		shiftVal := val.Lsh(uint(shift))
 		bigShiftVal := new(big.Int).Lsh(bigVal, uint(shift))
-		bigShiftVal = bigShiftVal.And(bigShiftVal, maxBigIntUint512)
+		bigShiftVal = bigShiftVal.And(bigShiftVal, maxBigIntUint1024)
 		got, want := shiftVal.String(), bigShiftVal.String()
 
 		assertString(t, got, want, fmt.Sprintf("Lsh-%d", shift))
 	}
 }
 
-func TestUint512_Rsh(t *testing.T) {
+func TestUint1024_Rsh(t *testing.T) {
 	for i := 0; i < loopTimes; i++ {
-		val := rand512()
+		val := rand1024()
 		bigVal := val.Big()
 
 		//shift := rand.Uint64() % (uint64(len(val)) * 64)
-		shift := rand.Uint64() % 520
+		shift := rand.Uint64() % 1030
 
 		shiftVal := val.Rsh(uint(shift))
 		bigShiftVal := new(big.Int).Rsh(bigVal, uint(shift))
-		bigShiftVal = bigShiftVal.And(bigShiftVal, maxBigIntUint512)
+		bigShiftVal = bigShiftVal.And(bigShiftVal, maxBigIntUint1024)
 
 		assertString(t, shiftVal.String(), bigShiftVal.String(), fmt.Sprintf("Rsh-%d", shift))
 	}
 }
 
-func TestUint512_Bits(t *testing.T) {
+func TestUint1024_Bits(t *testing.T) {
 	for i := 0; i < loopTimes; i++ {
-		val := rand512()
+		val := rand1024()
 		bigVal := val.Big()
 
-		for i := 0; i < 520; i++ {
+		for i := 0; i < 1030; i++ {
 			assertBool(t, val.Bit(i), bigVal.Bit(i) == 1, "Bit")
 		}
 	}
 }
 
-func TestUint512_LeadingZeros(t *testing.T) {
+func TestUint1024_LeadingZeros(t *testing.T) {
 	for i := 0; i < loopTimes; i++ {
-		val := rand512()
+		val := rand1024()
 
 		bigVal := val.Big()
 
@@ -213,7 +214,7 @@ func TestUint512_LeadingZeros(t *testing.T) {
 
 		bigBytes := bigVal.Bytes()
 
-		diff := 64 - len(bigBytes)
+		diff := 128 - len(bigBytes)
 
 		if diff > 0 {
 			diffBytes := make([]byte, diff)
@@ -236,10 +237,9 @@ func TestUint512_LeadingZeros(t *testing.T) {
 	}
 }
 
-func TestUint512_TrailingZeros(t *testing.T) {
+func TestUint1024_TrailingZeros(t *testing.T) {
 	for i := 0; i < loopTimes; i++ {
-		val := rand512()
-		val.Hi = Uint256{}
+		val := rand1024()
 
 		bigVal := val.Big()
 
@@ -249,7 +249,7 @@ func TestUint512_TrailingZeros(t *testing.T) {
 
 		bigBytes := bigVal.Bytes()
 
-		diff := 64 - len(bigBytes)
+		diff := 128 - len(bigBytes)
 
 		if diff > 0 {
 			diffBytes := make([]byte, diff)
@@ -272,9 +272,9 @@ func TestUint512_TrailingZeros(t *testing.T) {
 	}
 }
 
-func TestUint512_FromBig(t *testing.T) {
+func TestUint1024_FromBig(t *testing.T) {
 	for i := 0; i < loopTimes; i++ {
-		val := rand512()
+		val := rand1024()
 		fromBigVal := FromBig(val.Big())
 
 		assertString(t, val.String(), fromBigVal.String(), "FromBig")

@@ -8,7 +8,9 @@ We thank the original author for their excellent work and have retained all orig
 
 ### Notable Changes (ongoing):
 - Uint512
+  - Bits(n uint)
 - Uint1024
+  - Bits(n uint)
 
 # bigz [![GoDoc][doc-img]][doc] [![Build Status][ci-img]][ci] [![Go Report Card][reportcard-img]][reportcard]
 
