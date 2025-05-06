@@ -6,7 +6,7 @@ import (
 	"math/bits"
 	"unsafe"
 
-	"github.com/Pilatuz/bigz/uint128"
+	"github.com/piliming/bigz/uint128"
 )
 
 // Note, Zero and Max are functions just to make read-only values.

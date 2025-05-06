@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/Pilatuz/bigz/uint128"
+	"github.com/piliming/bigz/uint128"
 )
 
 // FromString parses input string as a Uint256 value.

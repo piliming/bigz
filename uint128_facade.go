@@ -1,7 +1,7 @@
 package bigz
 
 import (
-	u128 "github.com/Pilatuz/bigz/uint128"
+	u128 "github.com/piliming/bigz/uint128"
 )
 
 // Uint128 is type alias for 128-bit unsigned integer.

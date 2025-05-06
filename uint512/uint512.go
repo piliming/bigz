@@ -2,8 +2,8 @@ package uint512
 
 import (
 	"errors"
-	"github.com/Pilatuz/bigz/uint128"
-	"github.com/Pilatuz/bigz/uint256"
+	"github.com/piliming/bigz/uint128"
+	"github.com/piliming/bigz/uint256"
 	"math/big"
 	"math/bits"
 	"slices"

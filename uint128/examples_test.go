@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"net"
 
-	"github.com/Pilatuz/bigz/uint128"
+	"github.com/piliming/bigz/uint128"
 )
 
 // ExampleFromBig is an example for FromBig.

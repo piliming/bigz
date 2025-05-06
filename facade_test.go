@@ -3,7 +3,7 @@ package bigz_test
 import (
 	"testing"
 
-	"github.com/Pilatuz/bigz"
+	"github.com/piliming/bigz"
 )
 
 // note, this is just to make codecov happy.

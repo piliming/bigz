@@ -3,7 +3,7 @@ package bigz_test
 import (
 	"fmt"
 
-	"github.com/Pilatuz/bigz"
+	"github.com/piliming/bigz"
 )
 
 // Example_new an example of creating Uint128 values.

@@ -8,7 +8,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/Pilatuz/bigz/uint128"
+	"github.com/piliming/bigz/uint128"
 )
 
 // rand256 generates single Uint256 random value.

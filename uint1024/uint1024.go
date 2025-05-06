@@ -1,6 +1,6 @@
 package uint1024
 
-import "github.com/Pilatuz/bigz/uint256"
+import "github.com/piliming/bigz/uint256"
 
 func Zero() Uint512 {
 	return From64(0)

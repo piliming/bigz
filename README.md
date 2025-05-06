@@ -1,3 +1,15 @@
+## About This Project
+
+This project is a fork of [github.com/Pilatuz/bigz](https://github.com/Pilatuz/bigz), originally created by Pilatuz.
+
+We have forked the repository to make custom modifications for our own use cases and plan to maintain it independently. The module path has been changed to `github.com/piliming/bigz` to support proper use with Go modules.
+
+We thank the original author for their excellent work and have retained all original copyright and license information.
+
+### Notable Changes (ongoing):
+- Uint512
+- Uint1024
+
 # bigz [![GoDoc][doc-img]][doc] [![Build Status][ci-img]][ci] [![Go Report Card][reportcard-img]][reportcard]
 
 `bigz/uint128` provides a high-performance `Uint128` type that supports standard arithmetic
@@ -13,14 +25,14 @@ Released under the [MIT License](LICENSE).
 ## Installation
 
 ```shell
-go get github.com/Pilatuz/bigz
+go get github.com/piliming/bigz
 ```
 
 The name `uint128.Uint128` and `uint256.Uint256` stutter, so it is recommended either using a "facade" package:
 
 ```go
 import (
-    "github.com/Pilatuz/bigz"
+    "github.com/piliming/bigz"
 )
 
 // then use bigz.Uint128 type
@@ -31,8 +43,8 @@ or type aliasing to give it a project-specific name:
 
 ```go
 import (
-    "github.com/Pilatuz/bigz/uint128"
-    "github.com/Pilatuz/bigz/uint256"
+    "github.com/piliming/bigz/uint128"
+    "github.com/piliming/bigz/uint256"
 )
 
 type U128 = uint128.Uint128

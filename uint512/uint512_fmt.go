@@ -2,7 +2,7 @@ package uint512
 
 import (
 	"fmt"
-	"github.com/Pilatuz/bigz/uint256"
+	"github.com/piliming/bigz/uint256"
 	"math/big"
 )
 

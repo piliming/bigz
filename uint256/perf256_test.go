@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/Pilatuz/bigz/uint128"
+	"github.com/piliming/bigz/uint128"
 )
 
 // DummyOutput is exported to avoid unwanted optimizations
