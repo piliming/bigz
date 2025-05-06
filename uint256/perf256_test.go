@@ -328,3 +328,24 @@ func BenchmarkDiv(b *testing.B) {
 		DummyOutput += int(q.Uint64() & 1)
 	})
 }
+
+// BenchmarkSub performance tests for Sub.
+func BenchmarkLsh(b *testing.B) {
+	const K = 1024 // should be power of 2
+	xx := rand256slice(K)
+
+	// Uint256: 256 - 256
+	b.Run("Opt_256_Rsh", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = xx[i%K].Rsh2(uint(i % 260))
+		}
+	})
+
+	// Native: 64 - 64
+	b.Run("Native_256_Rsh", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = xx[i%K].Rsh(uint(i % 260))
+		}
+	})
+
+}

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"math/big"
 	"math/bits"
+	"unsafe"
 
 	"github.com/Pilatuz/bigz/uint128"
 )
@@ -119,9 +120,10 @@ func (u Uint256) Equals128(v Uint128) bool {
 }
 
 // Cmp compares two 256-bit values and returns:
-//   -1 if u <  v
-//    0 if u == v
-//   +1 if u >  v
+//
+//	-1 if u <  v
+//	 0 if u == v
+//	+1 if u >  v
 func (u Uint256) Cmp(v Uint256) int {
 	if h := u.Hi.Cmp(v.Hi); h != 0 {
 		return h
@@ -130,9 +132,10 @@ func (u Uint256) Cmp(v Uint256) int {
 }
 
 // Cmp128 compares 256-bit and 128-bit values and returns:
-//   -1 if u <  v
-//    0 if u == v
-//   +1 if u >  v
+//
+//	-1 if u <  v
+//	 0 if u == v
+//	+1 if u >  v
 func (u Uint256) Cmp128(v Uint128) int {
 	switch {
 	case !u.Hi.IsZero():
@@ -468,6 +471,65 @@ func (u Uint256) Lsh(n uint) Uint256 {
 			Hi: u.Hi.Hi<<n | u.Hi.Lo>>(64-n),
 		},
 	}
+}
+
+func (u Uint256) Rsh2(n uint) Uint256 {
+	if n == 0 {
+		return u
+	}
+	if n >= 512 {
+		return Zero()
+	}
+
+	uArr := *(*[4]uint64)(unsafe.Pointer(&u))
+
+	var result [4]uint64
+
+	if n < 64 {
+		result[0] = (uArr[0] >> n) | (uArr[1] << (64 - n))
+		result[1] = (uArr[1] >> n) | (uArr[2] << (64 - n))
+		result[2] = (uArr[2] >> n) | (uArr[3] << (64 - n))
+		result[3] = (uArr[3] >> n)
+
+		return *(*Uint256)(unsafe.Pointer(&result[0]))
+	}
+
+	if n < 128 {
+		rshiftBits := n - 64
+		lshiftBits := 128 - n
+
+		result[0] = (uArr[1] >> rshiftBits) | (uArr[2] << lshiftBits)
+		result[1] = (uArr[2] >> rshiftBits) | (uArr[3] << lshiftBits)
+		result[2] = (uArr[3] >> rshiftBits)
+		result[3] = 0
+
+		return *(*Uint256)(unsafe.Pointer(&result[0]))
+	}
+
+	if n < 192 {
+		rshiftBits := n - 128
+		lshiftBits := 192 - n
+
+		result[0] = (uArr[2] >> rshiftBits) | (uArr[3] << lshiftBits)
+		result[1] = (uArr[3] >> rshiftBits)
+		result[2] = 0
+		result[3] = 0
+
+		return *(*Uint256)(unsafe.Pointer(&result[0]))
+	}
+	if n < 256 {
+		rshiftBits := n - 192
+		//lshiftBits := 256 - n
+
+		result[0] = (uArr[3] >> rshiftBits)
+		result[1] = 0
+		result[2] = 0
+		result[3] = 0
+
+		return *(*Uint256)(unsafe.Pointer(&result[0]))
+	}
+
+	return Zero()
 }
 
 // Rsh returns right shift (u>>n).
